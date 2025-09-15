@@ -759,7 +759,7 @@
                 console.error('Error loading updated subjects:', updatedError);
                 // Check if it's an auth error
                 if (updatedError.status === 401) {
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                     return;
                 }
                 subjectsContainer.innerHTML = '<div class="loading">Error loading subjects. Please refresh the page.</div>';
@@ -788,7 +788,7 @@
                     console.error('Error loading exams:', examsError);
                     // Check if it's an auth error
                     if (examsError.status === 401) {
-                        window.location.href = 'login.html';
+                        window.location.href = 'index.html';
                         return;
                     }
                     continue;
@@ -1033,7 +1033,7 @@
         // 7️⃣ Logout
         logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         });
         
         // Help button
