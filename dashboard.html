@@ -665,12 +665,12 @@
         
         if (sessionError) {
             console.error('Session error:', sessionError);
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return;
         }
         
         if (!session) {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return;
         }
 
@@ -720,7 +720,7 @@
                 console.error('Error loading subjects:', subjectsError);
                 // Check if it's an auth error
                 if (subjectsError.status === 401) {
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                     return;
                 }
                 subjectsContainer.innerHTML = '<div class="loading">Error loading subjects. Please refresh the page.</div>';
