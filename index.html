@@ -1,480 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Results</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            color: #334155;
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        .summary-section {
-            padding: 40px;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .averages-container {
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .average-card {
-            text-align: center;
-        }
-
-        .average-label {
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #64748b;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .average-value {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-
-        .grade-average .average-value {
-            font-size: 2.8rem;
-        }
-
-        .performance-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .performance-excellent {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .performance-good {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
-        .performance-needs-improvement {
-            background: #fed7d7;
-            color: #c53030;
-        }
-
-        .subjects-section {
-            padding: 40px;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .subjects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-
-        .subject-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 24px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .subject-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .subject-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-        }
-
-        .exam-marks {
-            margin-bottom: 16px;
-        }
-
-        .exam-mark {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            font-size: 0.875rem;
-            color: #64748b;
-        }
-
-        .exam-mark:not(:last-child) {
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .final-mark {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0 0 0;
-            border-top: 2px solid #e2e8f0;
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 1.1rem;
-        }
-
-        .mark-value {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .breakdown-section {
-            padding: 40px;
-            background: #f8fafc;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .breakdown-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .breakdown-list {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .breakdown-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.95rem;
-        }
-
-        .breakdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .breakdown-item.core-subject {
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .breakdown-item.additional-subject {
-            color: #64748b;
-        }
-
-        .mark-tag {
-            background: #e2e8f0;
-            color: #475569;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 30px 20px;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .summary-section, .subjects-section, .breakdown-section {
-                padding: 30px 20px;
-            }
-
-            .averages-container {
-                gap: 40px;
-            }
-
-            .average-value {
-                font-size: 2.5rem;
-            }
-
-            .grade-average .average-value {
-                font-size: 2rem;
-            }
-
-            .subjects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Register</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      background: #121212;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      background: #4caf50;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .toggle {
+      margin-top: 10px;
+      color: #00bfff;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>Academic Results</h1>
-            <p>2024 Academic Year • Term 4</p>
-        </div>
+  <div class="container">
+    <h2 id="formTitle">Register</h2>
+    <form id="authForm">
+      <input type="text" id="name" placeholder="Name (for registration)" /><br>
+      <input type="email" id="email" placeholder="Email" required /><br>
+      <input type="password" id="password" placeholder="Password" required /><br>
+      <button type="submit" id="submitBtn">Register</button>
+    </form>
+    <p id="status"></p>
+    <p class="toggle" id="toggleMode">Already have an account? Login</p>
+  </div>
 
-        <!-- Top Summary Section -->
-        <div class="summary-section">
-            <div class="averages-container">
-                <div class="average-card overall-average">
-                    <div class="average-label">Overall Average</div>
-                    <div class="average-value">78.4%</div>
-                </div>
-                <div class="average-card grade-average">
-                    <div class="average-label">Grade Average</div>
-                    <div class="average-value">76.8%</div>
-                </div>
-            </div>
-            <div class="performance-badge performance-good">Good Performance</div>
-        </div>
+  <script>
+    const supabaseUrl = "https://dasbgtczrqdwjzxlohaq.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhc2JndGN6cnFkd2p6eGxvaGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MzI4MzIsImV4cCI6MjA3MzUwODgzMn0.jukHtZwDO-m9w8VQPG-cSs_me2degc_5XV1wTeC8poA";
 
-        <!-- Subject Performance Section -->
-        <div class="subjects-section">
-            <h2 class="section-title">Subject Performance</h2>
-            <div class="subjects-grid">
-                <div class="subject-card">
-                    <div class="subject-name">Mathematics Core</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Exam 1</span>
-                            <span class="mark-value">82%</span>
-                        </div>
-                        <div class="exam-mark">
-                            <span>Exam 2</span>
-                            <span class="mark-value">78%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">80%</span>
-                    </div>
-                </div>
+    const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-                <div class="subject-card">
-                    <div class="subject-name">English</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Exam 1</span>
-                            <span class="mark-value">75%</span>
-                        </div>
-                        <div class="exam-mark">
-                            <span>Exam 2</span>
-                            <span class="mark-value">73%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">74%</span>
-                    </div>
-                </div>
+    let isRegister = true;
 
-                <div class="subject-card">
-                    <div class="subject-name">Life Orientation</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Final Exam</span>
-                            <span class="mark-value">85%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">85%</span>
-                    </div>
-                </div>
+    const formTitle = document.getElementById("formTitle");
+    const authForm = document.getElementById("authForm");
+    const statusEl = document.getElementById("status");
+    const toggleMode = document.getElementById("toggleMode");
+    const nameField = document.getElementById("name");
+    const submitBtn = document.getElementById("submitBtn");
 
-                <div class="subject-card">
-                    <div class="subject-name">Afrikaans</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Exam 1</span>
-                            <span class="mark-value">68%</span>
-                        </div>
-                        <div class="exam-mark">
-                            <span>Exam 2</span>
-                            <span class="mark-value">71%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">70%</span>
-                    </div>
-                </div>
+    toggleMode.addEventListener("click", () => {
+      isRegister = !isRegister;
+      if (isRegister) {
+        formTitle.textContent = "Register";
+        submitBtn.textContent = "Register";
+        toggleMode.textContent = "Already have an account? Login";
+        nameField.style.display = "block";
+      } else {
+        formTitle.textContent = "Login";
+        submitBtn.textContent = "Login";
+        toggleMode.textContent = "Don't have an account? Register";
+        nameField.style.display = "none";
+      }
+      statusEl.textContent = "";
+    });
 
-                <div class="subject-card">
-                    <div class="subject-name">Physical Sciences</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Final Exam</span>
-                            <span class="mark-value">84%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">84%</span>
-                    </div>
-                </div>
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusEl.textContent = "⏳ Please wait...";
 
-                <div class="subject-card">
-                    <div class="subject-name">Geography</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Final Exam</span>
-                            <span class="mark-value">77%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">77%</span>
-                    </div>
-                </div>
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const name = document.getElementById("name").value.trim();
 
-                <div class="subject-card">
-                    <div class="subject-name">History</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Final Exam</span>
-                            <span class="mark-value">72%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">72%</span>
-                    </div>
-                </div>
+      try {
+        if (isRegister) {
+          // SIGN UP
+          const { data, error } = await client.auth.signUp({
+            email,
+            password
+          });
 
-                <div class="subject-card">
-                    <div class="subject-name">Business Studies</div>
-                    <div class="exam-marks">
-                        <div class="exam-mark">
-                            <span>Final Exam</span>
-                            <span class="mark-value">79%</span>
-                        </div>
-                    </div>
-                    <div class="final-mark">
-                        <span>Final Mark</span>
-                        <span class="mark-value">79%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+          if (error) throw error;
 
-        <!-- Grade Average Breakdown -->
-        <div class="breakdown-section">
-            <h2 class="section-title">Grade Average Calculation</h2>
-            <div class="breakdown-content">
-                <div class="breakdown-list">
-                    <div class="breakdown-item core-subject">
-                        <span>Mathematics Core (Required)</span>
-                        <span class="mark-tag">80%</span>
-                    </div>
-                    <div class="breakdown-item core-subject">
-                        <span>English (Required)</span>
-                        <span class="mark-tag">74%</span>
-                    </div>
-                    <div class="breakdown-item core-subject">
-                        <span>Life Orientation (Required)</span>
-                        <span class="mark-tag">85%</span>
-                    </div>
-                    <div class="breakdown-item core-subject">
-                        <span>Afrikaans (Required)</span>
-                        <span class="mark-tag">70%</span>
-                    </div>
-                    <div class="breakdown-item additional-subject">
-                        <span>Physical Sciences (Highest)</span>
-                        <span class="mark-tag">84%</span>
-                    </div>
-                    <div class="breakdown-item additional-subject">
-                        <span>Business Studies (2nd Highest)</span>
-                        <span class="mark-tag">79%</span>
-                    </div>
-                    <div class="breakdown-item additional-subject">
-                        <span>Geography (3rd Highest)</span>
-                        <span class="mark-tag">77%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+          // Insert into profiles
+          if (data.user) {
+            await client.from("profiles").insert([
+              { id: data.user.id, name }
+            ]);
+          }
 
-    <script>
-        // Calculate performance indicator based on overall average
-        function updatePerformanceIndicator() {
-            const overallAverage = 78.4; // This would be calculated dynamically
-            const badge = document.querySelector('.performance-badge');
-            
-            if (overallAverage >= 80) {
-                badge.textContent = 'Excellent Performance';
-                badge.className = 'performance-badge performance-excellent';
-            } else if (overallAverage >= 70) {
-                badge.textContent = 'Good Performance';
-                badge.className = 'performance-badge performance-good';
-            } else {
-                badge.textContent = 'Needs Improvement';
-                badge.className = 'performance-badge performance-needs-improvement';
-            }
+          statusEl.textContent = "✅ Registered! Please check your email to confirm.";
+        } else {
+          // LOGIN
+          const { data, error } = await client.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (error) throw error;
+
+          statusEl.textContent = "✅ Login successful! Redirecting...";
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1000);
         }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', updatePerformanceIndicator);
-    </script>
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "❌ " + err.message;
+      }
+    });
+  </script>
 </body>
 </html>
