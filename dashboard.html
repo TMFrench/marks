@@ -6,61 +6,233 @@
 <title>Academic Results Tracking - Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #1a1a1a;
-    color: #ffffff;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-header {
-    background-color: #2a2a2a;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.logo { font-size: 1.25rem; font-weight: 600; color: #4a90e2; }
-.user-info { display: flex; align-items: center; gap: 1rem; }
-#logout-btn {
-    background-color: #4a90e2; color: #ffffff; border: none;
-    padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;
-    transition: background-color 0.2s;
-}
-#logout-btn:hover { background-color: #357abd; }
-main { padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
-.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1rem; margin-bottom: 2rem; }
-.summary-card { background-color: #2a2a2a; padding: 1rem; border-radius: 8px; text-align: center; }
-.summary-card h3 { margin:0 0 0.5rem; color:#cccccc; }
-.summary-card p { font-size:1.5rem; margin:0; color:#4a90e2; }
-.subjects { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:1rem; }
-.subject-card { background-color:#2a2a2a; padding:1rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-.subject-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-.subject-header h2 { margin:0; font-size:1.25rem; }
-.subject-actions { display:flex; gap:0.5rem; }
-.btn { background-color:#4a90e2; color:#ffffff; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer; transition: background-color 0.2s; font-size:0.875rem; }
-.btn:hover { background-color:#357abd; }
-.btn-danger { background-color:#ff4d4d; }
-.btn-danger:hover { background-color:#cc0000; }
-.exams-list { margin-bottom:1rem; }
-.exam-item { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid #3a3a3a; }
-.exam-item:last-child { border-bottom:none; }
-.exam-actions { display:flex; gap:0.5rem; }
-.add-btn { display:block; margin:2rem auto 0; background-color:#4a90e2; color:#ffffff; border:none; padding:0.75rem 1.5rem; border-radius:4px; cursor:pointer; transition:background-color 0.2s; font-size:1rem; }
-.add-btn:hover { background-color:#357abd; }
-.modal { display:none; position:fixed; z-index:1; left:0; top:0; width:100%; height:100%; overflow:auto; background-color: rgba(0,0,0,0.4); justify-content:center; align-items:center; }
-.modal-content { background-color:#2a2a2a; padding:2rem; border-radius:8px; width:90%; max-width:400px; }
-.close { color:#aaaaaa; float:right; font-size:28px; font-weight:bold; cursor:pointer; }
-.close:hover, .close:focus { color:#ffffff; text-decoration:none; }
-input, select { margin-bottom:1rem; padding:0.75rem; border:none; border-radius:4px; background-color:#1a1a1a; color:#ffffff; font-size:1rem; }
-input:focus, select:focus { outline:none; box-shadow:0 0 0 2px #4a90e2; }
-@media (max-width:600px){ main{padding:1rem;} .summary{grid-template-columns:1fr;} .subjects{grid-template-columns:1fr;} }
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    header {
+        background-color: #2a2a2a;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #4a90e2;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    #logout-btn {
+        background-color: #4a90e2;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    #logout-btn:hover {
+        background-color: #357abd;
+    }
+
+    main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .summary-card {
+        background-color: #2a2a2a;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .summary-card h3 {
+        margin: 0 0 0.5rem;
+        color: #cccccc;
+    }
+
+    .summary-card p {
+        font-size: 1.5rem;
+        margin: 0;
+        color: #4a90e2;
+    }
+
+    .subjects {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .subject-card {
+        background-color: #2a2a2a;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .subject-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .subject-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn {
+        background-color: #4a90e2;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-size: 0.875rem;
+    }
+
+    .btn:hover {
+        background-color: #357abd;
+    }
+
+    .btn-danger {
+        background-color: #ff4d4d;
+    }
+
+    .btn-danger:hover {
+        background-color: #cc0000;
+    }
+
+    .exams-list {
+        margin-bottom: 1rem;
+    }
+
+    .exam-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #3a3a3a;
+    }
+
+    .exam-item:last-child {
+        border-bottom: none;
+    }
+
+    .exam-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .add-btn {
+        display: block;
+        margin: 2rem auto 0;
+        background-color: #4a90e2;
+        color: #ffffff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-size: 1rem;
+    }
+
+    .add-btn:hover {
+        background-color: #357abd;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: #2a2a2a;
+        padding: 2rem;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    input, select {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 4px;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-size: 1rem;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #4a90e2;
+    }
+
+    @media (max-width: 600px) {
+        main { padding: 1rem; }
+        .summary { grid-template-columns: 1fr; }
+        .subjects { grid-template-columns: 1fr; }
+    }
 </style>
 </head>
 <body>
@@ -73,9 +245,18 @@ input:focus, select:focus { outline:none; box-shadow:0 0 0 2px #4a90e2; }
 </header>
 <main>
     <section class="summary">
-        <div class="summary-card"><h3>Overall Average</h3><p id="overall-average">0%</p></div>
-        <div class="summary-card"><h3>Total Subjects</h3><p id="total-subjects">0</p></div>
-        <div class="summary-card"><h3>Total Exams</h3><p id="total-exams">0</p></div>
+        <div class="summary-card">
+            <h3>Overall Average</h3>
+            <p id="overall-average">0%</p>
+        </div>
+        <div class="summary-card">
+            <h3>Total Subjects</h3>
+            <p id="total-subjects">0</p>
+        </div>
+        <div class="summary-card">
+            <h3>Total Exams</h3>
+            <p id="total-exams">0</p>
+        </div>
     </section>
     <section class="subjects" id="subjects-container"></section>
     <button class="add-btn" id="add-subject-btn">Add Subject</button>
@@ -88,7 +269,8 @@ input:focus, select:focus { outline:none; box-shadow:0 0 0 2px #4a90e2; }
         <h2 id="subject-modal-title">Add Subject</h2>
         <form id="subject-form">
             <input type="text" id="subject-name" placeholder="Subject Name" required>
-            <label><input type="checkbox" id="is-advanced"> Advanced Subject?</label>
+            <label for="is-advanced">Advanced Subject?</label>
+            <input type="checkbox" id="is-advanced">
             <button type="submit" class="btn">Save</button>
         </form>
     </div>
@@ -108,230 +290,227 @@ input:focus, select:focus { outline:none; box-shadow:0 0 0 2px #4a90e2; }
 </div>
 
 <script>
-const supabaseUrl = 'https://dasbgtczrqdwjzxlohaq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhc2JndGN6cnFkd2p6eGxvaGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MzI4MzIsImV4cCI6MjA3MzUwODgzMn0.jukHtZwDO-m9w8VQPG-cSs_me2degc_5XV1wTeC8poA';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+(async function() {
+    // 1️⃣ Initialize Supabase FIRST
+    const supabaseUrl = 'https://dasbgtczrqdwjzxlohaq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhc2JndGN6cnFkd2p6eGxvaGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MzI4MzIsImV4cCI6MjA3MzUwODgzMn0.jukHtZwDO-m9w8VQPG-cSs_me2degc_5XV1wTeC8poA';
+    const { createClient } = supabase; // Reference the global supabase from CDN
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-const userName = document.getElementById('user-name');
-const logoutBtn = document.getElementById('logout-btn');
-const overallAverage = document.getElementById('overall-average');
-const totalSubjects = document.getElementById('total-subjects');
-const totalExams = document.getElementById('total-exams');
-const subjectsContainer = document.getElementById('subjects-container');
-const addSubjectBtn = document.getElementById('add-subject-btn');
+    // 2️⃣ DOM Elements
+    const userName = document.getElementById('user-name');
+    const logoutBtn = document.getElementById('logout-btn');
+    const overallAverage = document.getElementById('overall-average');
+    const totalSubjects = document.getElementById('total-subjects');
+    const totalExams = document.getElementById('total-exams');
+    const subjectsContainer = document.getElementById('subjects-container');
+    const addSubjectBtn = document.getElementById('add-subject-btn');
 
-// Modals
-const subjectModal = document.getElementById('subject-modal');
-const subjectClose = document.getElementById('subject-close');
-const subjectForm = document.getElementById('subject-form');
-const subjectNameInput = document.getElementById('subject-name');
-const isAdvancedInput = document.getElementById('is-advanced');
-const subjectModalTitle = document.getElementById('subject-modal-title');
+    const subjectModal = document.getElementById('subject-modal');
+    const subjectClose = document.getElementById('subject-close');
+    const subjectForm = document.getElementById('subject-form');
+    const subjectNameInput = document.getElementById('subject-name');
+    const isAdvancedInput = document.getElementById('is-advanced');
+    const subjectModalTitle = document.getElementById('subject-modal-title');
 
-const examModal = document.getElementById('exam-modal');
-const examClose = document.getElementById('exam-close');
-const examForm = document.getElementById('exam-form');
-const examNameInput = document.getElementById('exam-name');
-const examMarkInput = document.getElementById('exam-mark');
-const examModalTitle = document.getElementById('exam-modal-title');
+    const examModal = document.getElementById('exam-modal');
+    const examClose = document.getElementById('exam-close');
+    const examForm = document.getElementById('exam-form');
+    const examNameInput = document.getElementById('exam-name');
+    const examMarkInput = document.getElementById('exam-mark');
+    const examModalTitle = document.getElementById('exam-modal-title');
 
-let currentSubjectId = null;
-let currentExamId = null;
-let currentExamSubjectId = null;
+    let currentSubjectId = null;
+    let currentExamId = null;
+    let currentExamSubjectId = null;
 
-// Initialize
-async function init() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { window.location.href = 'login.html'; return; }
+    // 3️⃣ Auth check
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return window.location.href = 'login.html';
 
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('name')
-        .eq('id', session.user.id)
-        .single();
-
+    const { data: profile } = await supabaseClient.from('profiles').select('name').eq('id', session.user.id).single();
     userName.textContent = `Welcome, ${profile.name}`;
-    loadSubjects();
-}
 
-async function loadSubjects() {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data: subjects, error } = await supabase
-        .from('subjects')
-        .select('*')
-        .eq('student_id', user.id)
-        .order('created_at', { ascending:true });
-
-    if (error) { console.error(error); return; }
-
-    subjectsContainer.innerHTML = '';
-    let allExams = [];
-    for (const subject of subjects) {
-        const exams = await fetchExams(subject.subject_id);
-        renderSubject(subject, exams);
-        allExams = allExams.concat(exams);
+    // 4️⃣ Load subjects
+    async function loadSubjects() {
+        const { data: subjects } = await supabaseClient.from('subjects').select('*').eq('student_id', session.user.id).order('created_at', { ascending: true });
+        subjectsContainer.innerHTML = '';
+        let allMarks = [];
+        let examCount = 0;
+        for (const subject of subjects || []) {
+            const { data: exams } = await supabaseClient.from('exams').select('*').eq('subject_id', subject.subject_id).order('created_at', { ascending: true });
+            renderSubject(subject, exams || []);
+            allMarks = allMarks.concat((exams || []).map(e => e.mark));
+            examCount += (exams || []).length;
+        }
+        updateSummary(subjects || [], allMarks, examCount);
     }
 
-    updateSummary(subjects, allExams);
-}
-
-async function fetchExams(subjectId) {
-    const { data, error } = await supabase
-        .from('exams')
-        .select('*')
-        .eq('subject_id', subjectId)
-        .order('created_at', { ascending:true });
-    if (error) { console.error(error); return []; }
-    return data;
-}
-
-function renderSubject(subject, exams) {
-    const subjectAverage = calculateAverage(exams.map(e=>e.mark));
-    const card = document.createElement('div');
-    card.className = 'subject-card';
-    card.innerHTML = `
-        <div class="subject-header">
-            <h2>${subject.name} ${subject.is_advanced ? '(Advanced)' : ''}</h2>
-            <div class="subject-actions">
-                <button class="btn" onclick="openSubjectModal('${subject.subject_id}')">Edit</button>
-                <button class="btn btn-danger" onclick="deleteSubject('${subject.subject_id}')">Delete</button>
+    function renderSubject(subject, exams) {
+        const subjectAverage = exams.length ? exams.reduce((a, b) => a + b.mark, 0) / exams.length : 0;
+        const card = document.createElement('div');
+        card.className = 'subject-card';
+        card.innerHTML = `
+            <div class="subject-header">
+                <h2>${subject.name} ${subject.is_advanced ? '(Advanced)' : ''}</h2>
+                <div class="subject-actions">
+                    <button class="btn" data-action="edit-subject" data-id="${subject.subject_id}">Edit</button>
+                    <button class="btn btn-danger" data-action="delete-subject" data-id="${subject.subject_id}">Delete</button>
+                </div>
             </div>
-        </div>
-        <p>Average: ${subjectAverage.toFixed(2)}%</p>
-        <div class="exams-list" id="exams-${subject.subject_id}"></div>
-        <button class="btn" onclick="openExamModal('${subject.subject_id}', null)">Add Exam</button>
-    `;
-    subjectsContainer.appendChild(card);
-
-    const examsList = document.getElementById(`exams-${subject.subject_id}`);
-    exams.forEach(exam=>{
-        const item = document.createElement('div');
-        item.className='exam-item';
-        item.innerHTML=`
-            <span>${exam.exam_name}: ${exam.mark}%</span>
-            <div class="exam-actions">
-                <button class="btn" onclick="openExamModal('${subject.subject_id}', '${exam.exam_id}')">Edit</button>
-                <button class="btn btn-danger" onclick="deleteExam('${exam.exam_id}')">Delete</button>
-            </div>
+            <p>Average: ${subjectAverage.toFixed(2)}%</p>
+            <div class="exams-list" id="exams-${subject.subject_id}"></div>
+            <button class="btn" data-action="add-exam" data-id="${subject.subject_id}">Add Exam</button>
         `;
-        examsList.appendChild(item);
+        subjectsContainer.appendChild(card);
+
+        const examsList = document.getElementById(`exams-${subject.subject_id}`);
+        exams.forEach(exam => {
+            const item = document.createElement('div');
+            item.className = 'exam-item';
+            item.innerHTML = `
+                <span>${exam.exam_name}: ${exam.mark}%</span>
+                <div class="exam-actions">
+                    <button class="btn" data-action="edit-exam" data-id="${exam.exam_id}" data-subject-id="${subject.subject_id}">Edit</button>
+                    <button class="btn btn-danger" data-action="delete-exam" data-id="${exam.exam_id}">Delete</button>
+                </div>
+            `;
+            examsList.appendChild(item);
+        });
+    }
+
+    function updateSummary(subjects, allMarks, examCount) {
+        const avg = examCount ? allMarks.reduce((a, b) => a + b, 0) / examCount : 0;
+        overallAverage.textContent = `${avg.toFixed(2)}%`;
+        totalSubjects.textContent = subjects.length;
+        totalExams.textContent = examCount;
+    }
+
+    // 5️⃣ Subject modal
+    addSubjectBtn.addEventListener('click', () => openSubjectModal(null));
+
+    async function openSubjectModal(subjectId) {
+        currentSubjectId = subjectId;
+        if (subjectId) {
+            const { data } = await supabaseClient.from('subjects').select('*').eq('subject_id', subjectId).single();
+            subjectNameInput.value = data.name;
+            isAdvancedInput.checked = data.is_advanced;
+            subjectModalTitle.textContent = 'Edit Subject';
+        } else {
+            subjectNameInput.value = '';
+            isAdvancedInput.checked = false;
+            subjectModalTitle.textContent = 'Add Subject';
+        }
+        subjectModal.style.display = 'flex';
+    }
+
+    subjectClose.addEventListener('click', () => subjectModal.style.display = 'none');
+
+    subjectForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = subjectNameInput.value;
+        const isAdvanced = isAdvancedInput.checked;
+        if (currentSubjectId) {
+            const { error } = await supabaseClient.from('subjects').update({ name, is_advanced: isAdvanced }).eq('subject_id', currentSubjectId);
+            if (error) console.error(error);
+        } else {
+            const { error } = await supabaseClient.from('subjects').insert({ student_id: session.user.id, name, is_advanced: isAdvanced });
+            if (error) console.error(error);
+        }
+        subjectModal.style.display = 'none';
+        loadSubjects();
     });
-}
 
-function calculateAverage(marks) {
-    if(marks.length===0) return 0;
-    return marks.reduce((a,b)=>a+b,0)/marks.length;
-}
-
-async function updateSummary(subjects, exams) {
-    const avg = calculateAverage(exams.map(e=>e.mark));
-    overallAverage.textContent=`${avg.toFixed(2)}%`;
-    totalSubjects.textContent=subjects.length;
-    totalExams.textContent=exams.length;
-}
-
-// Subject Modal
-addSubjectBtn.addEventListener('click',()=>openSubjectModal(null));
-function openSubjectModal(subjectId){
-    currentSubjectId=subjectId;
-    if(subjectId){
-        supabase.from('subjects').select('*').eq('subject_id',subjectId).single().then(({data})=>{
-            subjectNameInput.value=data.name;
-            isAdvancedInput.checked=data.is_advanced;
-            subjectModalTitle.textContent='Edit Subject';
-        });
-    } else {
-        subjectNameInput.value='';
-        isAdvancedInput.checked=false;
-        subjectModalTitle.textContent='Add Subject';
+    async function deleteSubject(subjectId) {
+        if (confirm('Delete subject and all exams?')) {
+            const { error: subjectError } = await supabaseClient.from('subjects').delete().eq('subject_id', subjectId);
+            if (subjectError) console.error(subjectError);
+            const { error: examsError } = await supabaseClient.from('exams').delete().eq('subject_id', subjectId);
+            if (examsError) console.error(examsError);
+            loadSubjects();
+        }
     }
-    subjectModal.style.display='flex';
-}
-subjectClose.addEventListener('click',()=>{subjectModal.style.display='none';});
-subjectForm.addEventListener('submit',async e=>{
-    e.preventDefault();
-    const name = subjectNameInput.value;
-    const isAdvanced = isAdvancedInput.checked;
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if(currentSubjectId){
-        const { error } = await supabase.from('subjects').update({name,is_advanced:isAdvanced}).eq('subject_id',currentSubjectId);
-        if(error) console.error(error);
-    } else {
-        const { error } = await supabase.from('subjects').insert({student_id:user.id,name,is_advanced:isAdvanced});
-        if(error) console.error(error);
+    // 6️⃣ Exam modal
+    async function openExamModal(subjectId, examId) {
+        currentExamSubjectId = subjectId;
+        currentExamId = examId;
+        if (examId) {
+            const { data } = await supabaseClient.from('exams').select('*').eq('exam_id', examId).single();
+            examNameInput.value = data.exam_name;
+            examMarkInput.value = data.mark;
+            examModalTitle.textContent = 'Edit Exam';
+        } else {
+            examNameInput.value = '';
+            examMarkInput.value = '';
+            examModalTitle.textContent = 'Add Exam';
+        }
+        examModal.style.display = 'flex';
     }
-    subjectModal.style.display='none';
-    loadSubjects();
-}
 
-);
+    examClose.addEventListener('click', () => examModal.style.display = 'none');
 
-// Exam Modal
-function openExamModal(subjectId, examId){
-    currentExamSubjectId=subjectId;
-    currentExamId=examId;
-    if(examId){
-        supabase.from('exams').select('*').eq('exam_id',examId).single().then(({data})=>{
-            examNameInput.value=data.exam_name;
-            examMarkInput.value=data.mark;
-            examModalTitle.textContent='Edit Exam';
-        });
-    } else {
-        examNameInput.value='';
-        examMarkInput.value='';
-        examModalTitle.textContent='Add Exam';
-    }
-    examModal.style.display='flex';
-}
-examClose.addEventListener('click',()=>{examModal.style.display='none';});
-examForm.addEventListener('submit',async e=>{
-    e.preventDefault();
-    const name = examNameInput.value;
-    const mark = parseFloat(examMarkInput.value);
-
-    if(currentExamId){
-        const { error } = await supabase.from('exams').update({exam_name:name,mark}).eq('exam_id',currentExamId);
-        if(error) console.error(error);
-    } else {
-        const { error } = await supabase.from('exams').insert({subject_id:currentExamSubjectId,exam_name:name,mark});
-        if(error) console.error(error);
-    }
-    examModal.style.display='none';
-    loadSubjects();
-}
-);
-
-window.editSubject = openSubjectModal;
-window.deleteSubject = async subjectId => {
-    if(confirm('Are you sure? This will delete all associated exams.')){
-        const { error } = await supabase.from('subjects').delete().eq('subject_id',subjectId);
-        if(error) console.error(error);
+    examForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = examNameInput.value;
+        const mark = parseFloat(examMarkInput.value);
+        if (currentExamId) {
+            const { error } = await supabaseClient.from('exams').update({ exam_name: name, mark }).eq('exam_id', currentExamId);
+            if (error) console.error(error);
+        } else {
+            const { error } = await supabaseClient.from('exams').insert({ subject_id: currentExamSubjectId, exam_name: name, mark });
+            if (error) console.error(error);
+        }
+        examModal.style.display = 'none';
         loadSubjects();
+    });
+
+    async function deleteExam(examId) {
+        if (confirm('Delete this exam?')) {
+            const { error } = await supabaseClient.from('exams').delete().eq('exam_id', examId);
+            if (error) console.error(error);
+            loadSubjects();
+        }
     }
-};
-window.openExamModal = openExamModal;
-window.deleteExam = async examId=>{
-    if(confirm('Are you sure?')){
-        const { error } = await supabase.from('exams').delete().eq('exam_id',examId);
-        if(error) console.error(error);
-        loadSubjects();
-    }
-};
 
-// Logout
-logoutBtn.addEventListener('click', async ()=>{
-    await supabase.auth.signOut();
-    window.location.href='login.html';
-});
+    // 7️⃣ Logout
+    logoutBtn.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = 'login.html';
+    });
 
-// Close modals on outside click
-window.addEventListener('click', e=>{
-    if(e.target===subjectModal) subjectModal.style.display='none';
-    if(e.target===examModal) examModal.style.display='none';
-});
+    // 8️⃣ Close modals on outside click
+    window.addEventListener('click', e => {
+        if (e.target === subjectModal) subjectModal.style.display = 'none';
+        if (e.target === examModal) examModal.style.display = 'none';
+    });
 
-init();
+    // 9️⃣ Handle dynamic button clicks (replacing inline onclicks)
+    subjectsContainer.addEventListener('click', async e => {
+        const target = e.target;
+        if (target.tagName === 'BUTTON') {
+            const action = target.dataset.action;
+            const id = target.dataset.id;
+            const subjectId = target.dataset.subjectId || target.closest('.subject-card')?.querySelector('.exams-list')?.id?.replace('exams-', '');
+
+            if (action === 'edit-subject') {
+                await openSubjectModal(id);
+            } else if (action === 'delete-subject') {
+                await deleteSubject(id);
+            } else if (action === 'add-exam') {
+                await openExamModal(id, null);
+            } else if (action === 'edit-exam') {
+                await openExamModal(subjectId, id);
+            } else if (action === 'delete-exam') {
+                await deleteExam(id);
+            }
+        }
+    });
+
+    // 🔟 Initial load
+    loadSubjects();
+
+})();
 </script>
 </body>
 </html>
