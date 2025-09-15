@@ -661,11 +661,52 @@
         const compulsorySubjects = ['Mathematics', 'First Additional Language', 'Second Additional Language', 'Life Orientation'];
 
         // 3️⃣ Auth check
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) return window.location.href = 'login.html';
+        const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+        
+        if (sessionError) {
+            console.error('Session error:', sessionError);
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
+        }
 
-        const { data: profile } = await supabaseClient.from('profiles').select('name').eq('id', session.user.id).single();
-        userName.textContent = `Welcome, ${profile.name}`;
+        // Get user profile with better error handling
+        let profile = null;
+        try {
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('name')
+                .eq('id', session.user.id)
+                .single();
+                
+            if (error) {
+                console.error('Error fetching profile:', error);
+                // Create a profile if it doesn't exist
+                const { data: newProfile, error: insertError } = await supabaseClient
+                    .from('profiles')
+                    .insert([{ id: session.user.id, name: 'Student' }])
+                    .select()
+                    .single();
+                    
+                if (insertError) {
+                    console.error('Error creating profile:', insertError);
+                    userName.textContent = 'Welcome';
+                } else {
+                    profile = newProfile;
+                    userName.textContent = `Welcome, ${newProfile.name}`;
+                }
+            } else {
+                profile = data;
+                userName.textContent = `Welcome, ${data.name}`;
+            }
+        } catch (err) {
+            console.error('Exception fetching profile:', err);
+            userName.textContent = 'Welcome';
+        }
 
         // 4️⃣ Load subjects
         async function loadSubjects() {
@@ -677,6 +718,11 @@
             
             if (subjectsError) {
                 console.error('Error loading subjects:', subjectsError);
+                // Check if it's an auth error
+                if (subjectsError.status === 401) {
+                    window.location.href = 'login.html';
+                    return;
+                }
                 subjectsContainer.innerHTML = '<div class="loading">Error loading subjects. Please refresh the page.</div>';
                 return;
             }
@@ -711,6 +757,11 @@
             
             if (updatedError) {
                 console.error('Error loading updated subjects:', updatedError);
+                // Check if it's an auth error
+                if (updatedError.status === 401) {
+                    window.location.href = 'login.html';
+                    return;
+                }
                 subjectsContainer.innerHTML = '<div class="loading">Error loading subjects. Please refresh the page.</div>';
                 return;
             }
@@ -735,6 +786,11 @@
                 
                 if (examsError) {
                     console.error('Error loading exams:', examsError);
+                    // Check if it's an auth error
+                    if (examsError.status === 401) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
                     continue;
                 }
                 
