@@ -111,6 +111,7 @@
         .dashboard-title {
             font-size: 1.8rem;
             font-weight: 700;
+            color: var(--text-primary);
         }
 
         .dashboard-actions {
@@ -236,6 +237,7 @@
             background-color: var(--accent-primary);
             color: white;
             border: none;
+            padding: 0.75rem 1.5rem;
         }
 
         .btn-primary:hover {
@@ -477,6 +479,14 @@
             margin-left: 0.5rem;
         }
 
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
         @media (max-width: 1000px) {
             .subjects-grid {
                 grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -563,7 +573,9 @@
         </section>
         
         <h2 style="margin-bottom: 1.5rem; font-weight: 600;">Your Subjects</h2>
-        <section class="subjects-grid" id="subjects-container"></section>
+        <section class="subjects-grid" id="subjects-container">
+            <div class="loading">Loading subjects...</div>
+        </section>
         
         <div class="add-subject-section">
             <button class="add-btn" id="add-subject-btn">Add Subject</button>
@@ -604,6 +616,7 @@
                     <input type="number" id="exam-mark" placeholder="Enter mark" min="0" max="100" required>
                 </div>
                 <button type="submit" class="form-submit">Save Exam</button>
+            </form>
         </div>
     </div>
 
@@ -611,7 +624,7 @@
     (async function() {
         // 1️⃣ Initialize Supabase
         const supabaseUrl = 'https://dasbgtczrqdwjzxlohaq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhc2JndGN6cnFkd2p6eGxvaGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MzI4MzIsImV4cCI6MjA3MzUwODgzMn0.jukHtZwDO-m9w8VQPG-cSs_me2degc_5XV1wTeC8poA';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImRhc2JndGN6cnFkd2p6eGxvaGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MzI4MzIsImV4cCI6MjA3MzUwODgzMn0.jukHtZwDO-m9w8VQPG-cSs_me2degc_5XV1wTeC8poA';
         const { createClient } = supabase;
         const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
@@ -664,22 +677,30 @@
             
             if (subjectsError) {
                 console.error('Error loading subjects:', subjectsError);
+                subjectsContainer.innerHTML = '<div class="loading">Error loading subjects. Please refresh the page.</div>';
                 return;
             }
             
-            // Ensure compulsory subjects exist
-            for (const subjectName of compulsorySubjects) {
+            // Check if compulsory subjects exist, create if they don't
+            const compulsoryCheckPromises = compulsorySubjects.map(async (subjectName) => {
                 const exists = subjects && subjects.some(s => s.name === subjectName);
                 if (!exists) {
-                    const { error } = await supabaseClient.from('subjects').insert({
-                        student_id: session.user.id,
-                        name: subjectName,
-                        is_advanced: false,
-                        is_compulsory: true
-                    });
-                    if (error) console.error('Error creating compulsory subject:', error);
+                    try {
+                        const { error } = await supabaseClient.from('subjects').insert({
+                            student_id: session.user.id,
+                            name: subjectName,
+                            is_advanced: false
+                        });
+                        if (error) {
+                            console.error(`Error creating compulsory subject ${subjectName}:`, error);
+                        }
+                    } catch (err) {
+                        console.error(`Exception creating compulsory subject ${subjectName}:`, err);
+                    }
                 }
-            }
+            });
+            
+            await Promise.all(compulsoryCheckPromises);
             
             // Reload subjects after ensuring compulsory ones exist
             const { data: updatedSubjects, error: updatedError } = await supabaseClient
@@ -690,6 +711,7 @@
             
             if (updatedError) {
                 console.error('Error loading updated subjects:', updatedError);
+                subjectsContainer.innerHTML = '<div class="loading">Error loading subjects. Please refresh the page.</div>';
                 return;
             }
             
@@ -698,7 +720,13 @@
             let examCount = 0;
             let subjectAverages = [];
             
-            for (const subject of updatedSubjects || []) {
+            if (!updatedSubjects || updatedSubjects.length === 0) {
+                subjectsContainer.innerHTML = '<div class="loading">No subjects found. Add your first subject above.</div>';
+                updateSummary([], [], 0, []);
+                return;
+            }
+            
+            for (const subject of updatedSubjects) {
                 const { data: exams, error: examsError } = await supabaseClient
                     .from('exams')
                     .select('*')
@@ -719,7 +747,7 @@
                         name: subject.name,
                         average: subjectAvg,
                         isAdvanced: subject.is_advanced,
-                        isCompulsory: subject.is_compulsory
+                        isCompulsory: compulsorySubjects.includes(subject.name)
                     });
                 }
                 
@@ -734,6 +762,8 @@
 
         function renderSubject(subject, exams) {
             const subjectAverage = exams.length ? exams.reduce((a, b) => a + b.mark, 0) / exams.length : 0;
+            const isCompulsory = compulsorySubjects.includes(subject.name);
+            
             const card = document.createElement('div');
             card.className = 'subject-card';
             card.innerHTML = `
@@ -741,11 +771,11 @@
                     <div class="subject-title">
                         <h2>${subject.name}</h2>
                         ${subject.is_advanced ? '<span class="subject-badge">Advanced</span>' : ''}
-                        ${subject.is_compulsory ? '<span class="compulsory-badge">Compulsory</span>' : ''}
+                        ${isCompulsory ? '<span class="compulsory-badge">Compulsory</span>' : ''}
                     </div>
                     <div class="subject-actions">
                         <button class="btn" data-action="edit-subject" data-id="${subject.subject_id}">Edit</button>
-                        ${!subject.is_compulsory ? `<button class="btn btn-danger" data-action="delete-subject" data-id="${subject.subject_id}">Delete</button>` : ''}
+                        ${!isCompulsory ? `<button class="btn btn-danger" data-action="delete-subject" data-id="${subject.subject_id}">Delete</button>` : ''}
                     </div>
                 </div>
                 <div class="subject-content">
@@ -848,24 +878,27 @@
             const name = subjectNameInput.value;
             const isAdvanced = isAdvancedInput.checked;
             
-            // Check if subject is compulsory
-            const isCompulsory = compulsorySubjects.includes(name);
-            
             if (currentSubjectId) {
                 const { error } = await supabaseClient.from('subjects').update({ 
                     name, 
-                    is_advanced: isAdvanced,
-                    is_compulsory: isCompulsory
+                    is_advanced: isAdvanced
                 }).eq('subject_id', currentSubjectId);
-                if (error) console.error(error);
+                if (error) {
+                    console.error('Error updating subject:', error);
+                    alert('Error updating subject. Please try again.');
+                    return;
+                }
             } else {
                 const { error } = await supabaseClient.from('subjects').insert({ 
                     student_id: session.user.id, 
                     name, 
-                    is_advanced: isAdvanced,
-                    is_compulsory: isCompulsory
+                    is_advanced: isAdvanced
                 });
-                if (error) console.error(error);
+                if (error) {
+                    console.error('Error creating subject:', error);
+                    alert('Error creating subject. Please try again.');
+                    return;
+                }
             }
             subjectModal.style.display = 'none';
             loadSubjects();
@@ -873,10 +906,16 @@
 
         async function deleteSubject(subjectId) {
             if (confirm('Are you sure you want to delete this subject and all its exams?')) {
-                const { error: subjectError } = await supabaseClient.from('subjects').delete().eq('subject_id', subjectId);
-                if (subjectError) console.error(subjectError);
                 const { error: examsError } = await supabaseClient.from('exams').delete().eq('subject_id', subjectId);
-                if (examsError) console.error(examsError);
+                if (examsError) console.error('Error deleting exams:', examsError);
+                
+                const { error: subjectError } = await supabaseClient.from('subjects').delete().eq('subject_id', subjectId);
+                if (subjectError) {
+                    console.error('Error deleting subject:', subjectError);
+                    alert('Error deleting subject. Please try again.');
+                    return;
+                }
+                
                 loadSubjects();
             }
         }
@@ -906,10 +945,18 @@
             const mark = parseFloat(examMarkInput.value);
             if (currentExamId) {
                 const { error } = await supabaseClient.from('exams').update({ exam_name: name, mark }).eq('exam_id', currentExamId);
-                if (error) console.error(error);
+                if (error) {
+                    console.error('Error updating exam:', error);
+                    alert('Error updating exam. Please try again.');
+                    return;
+                }
             } else {
                 const { error } = await supabaseClient.from('exams').insert({ subject_id: currentExamSubjectId, exam_name: name, mark });
-                if (error) console.error(error);
+                if (error) {
+                    console.error('Error creating exam:', error);
+                    alert('Error creating exam. Please try again.');
+                    return;
+                }
             }
             examModal.style.display = 'none';
             loadSubjects();
@@ -918,7 +965,11 @@
         async function deleteExam(examId) {
             if (confirm('Are you sure you want to delete this exam?')) {
                 const { error } = await supabaseClient.from('exams').delete().eq('exam_id', examId);
-                if (error) console.error(error);
+                if (error) {
+                    console.error('Error deleting exam:', error);
+                    alert('Error deleting exam. Please try again.');
+                    return;
+                }
                 loadSubjects();
             }
         }
