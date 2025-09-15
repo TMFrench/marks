@@ -66,7 +66,6 @@
   <script>
     const supabaseUrl = "https://dasbgtczrqdwjzxlohaq.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhc2JndGN6cnFkd2p6eGxvaGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MzI4MzIsImV4cCI6MjA3MzUwODgzMn0.jukHtZwDO-m9w8VQPG-cSs_me2degc_5XV1wTeC8poA";
-
     const client = supabase.createClient(supabaseUrl, supabaseKey);
 
     let isRegister = true;
@@ -78,6 +77,7 @@
     const nameField = document.getElementById("name");
     const submitBtn = document.getElementById("submitBtn");
 
+    // Toggle between Register and Login
     toggleMode.addEventListener("click", () => {
       isRegister = !isRegister;
       if (isRegister) {
@@ -94,6 +94,7 @@
       statusEl.textContent = "";
     });
 
+    // Handle form submit
     authForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       statusEl.textContent = "⏳ Please wait...";
@@ -104,20 +105,16 @@
 
       try {
         if (isRegister) {
-          // SIGN UP
+          // SIGN UP with metadata (no manual profile insert)
           const { data, error } = await client.auth.signUp({
             email,
-            password
+            password,
+            options: {
+              data: { name }
+            }
           });
 
           if (error) throw error;
-
-          // Insert into profiles
-          if (data.user) {
-            await client.from("profiles").insert([
-              { id: data.user.id, name }
-            ]);
-          }
 
           statusEl.textContent = "✅ Registered! Please check your email to confirm.";
         } else {
